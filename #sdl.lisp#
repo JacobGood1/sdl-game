@@ -45,9 +45,9 @@
 (cffi:defcfun "get_event_type" :int)
 ;render.h
 (cffi:defcfun "create_renderer" :pointer (window :pointer) (index :int) (flags :int))
-(cffi:defcfun "set_render_draw_color" :void (renderer :pointer) (red :int) (green :int) (blue :int) (alpha :int))
-(cffi:defcfun "render_clear" :void (renderer :pointer ))
-(cffi:defcfun "render_present" :void (renderer :pointer ))
+(cffi:defcfun "set_render_draw_color" :void (renderer :pointer) (red :int) (green :int) (alpha :int))
+(cffi:defcfun "render_clear" :void (renderer :pointer))
+(cffi:defcfun "render_present" :void (renderer :pointer))
 
 ;hide and show the window so to circumvent the bug
 (declaim (inline create-window))
@@ -77,3 +77,4 @@
   :event-name-like-this (do-something)
    available code names: event"
        (setup-events-for-cond events))
+
