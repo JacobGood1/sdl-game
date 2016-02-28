@@ -7,6 +7,7 @@
 (defun pause-till-compile
     ()
   (error 'continue-compiling))
+(defun kek ())
 
 
 (cffi:define-foreign-library SDL
@@ -46,8 +47,12 @@
 ;render.h
 (cffi:defcfun "create_renderer" :pointer (window :pointer) (index :int) (flags :int))
 (cffi:defcfun "set_render_draw_color" :void (renderer :pointer) (red :int) (green :int) (blue :int) (alpha :int))
-(cffi:defcfun "render_clear" :void (renderer :pointer ))
-(cffi:defcfun "render_present" :void (renderer :pointer ))
+(cffi:defcfun "render_clear" :void (renderer :pointer))
+(cffi:defcfun "render_present" :void (renderer :pointer))
+(cffi:defcfun "destroy_renderer" :void (renderer :pointer))
+;window.h
+(cffi:defcfun "destroy_window" :void (window :pointer))
+
 
 ;hide and show the window so to circumvent the bug
 (declaim (inline create-window))

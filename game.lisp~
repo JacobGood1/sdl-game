@@ -1,0 +1,3 @@
+(in-package #:game)
+
+(utilities:def-class game)
