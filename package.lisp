@@ -18,10 +18,6 @@
 	   :destroy-renderer
 	   :destroy-window))
 
-;main package contains the # all others should not have it
-(defpackage #:sdl-game
-  (:use #:cl :sdl))
-
 (defpackage :game
   (:use #:cl :sdl)
   (:import-from :utilities
@@ -30,6 +26,12 @@
 		def-class
 		def-generic
 		set!)
-  (:export :game :render ))
+  (:export :render))
+
+;main package contains the # all others should not have it
+(defpackage #:sdl-game
+  (:use #:cl))
+
+
 
 

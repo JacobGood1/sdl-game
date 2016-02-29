@@ -1,9 +1,9 @@
 ;;;; package.lisp
 
 (defpackage :sdl
-  (:use #:cl :utilities)
+  (:use #:cl)
   (:export :create-window
-  		   :get-window-surface
+	   :get-window-surface
            :fill-rect
            :update-window-surface
            :hide-window
@@ -12,11 +12,27 @@
            :get-event-type
            :handle-events
            :create-renderer
-		   :set-render-draw-color
-		   :render-clear
-		   :render-present))
+	   :set-render-draw-color
+	   :render-clear
+	   :render-present
+	   :destroy-renderer
+	   :destroy-window))
+
+(defpackage :game
+  (:use #:cl :sdl)
+  (:import-from :utilities
+		make
+		def-method
+		def-class
+		def-generic
+		set!)
+  (:export :game :render))
 
 ;main package contains the # all others should not have it
 (defpackage #:sdl-game
-  (:use #:cl :sdl))
+  (:use #:cl
+	:game))
+
+
+
 

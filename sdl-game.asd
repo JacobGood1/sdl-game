@@ -9,6 +9,6 @@
   :serial t
   :components ((:file "package")
 	       (:file "sdl")
-               (:file "sdl-game")
-	       (:file "game")))
+	       (:file "game")
+               (:file "sdl-game")))
 

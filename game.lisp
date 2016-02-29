@@ -1,17 +1,16 @@
 (in-package #:game)
 
 
-
-(def-class game
-    :slots (window nil renderer nil running? t)
-    :constructor (lambda (title screen-width screen-height)
-		   (setf window
-			 (sdl:create-window title
-					    screen-width
-					    screen-height))
-		   (setf renderer (sdl:create-renderer window -1 0))
-		   ;set the screen to black
-		   (sdl:set-render-draw-color renderer 0 0 0 255)))
+;(def-class game
+;    :slots (window nil renderer nil running? t)
+;    :constructor (lambda (title screen-width screen-height)
+;		   (setf window
+;			 (sdl:create-window title
+;					    screen-width
+;					    screen-height))
+;		   (setf renderer (sdl:create-renderer window -1 0))
+;		   ;set the screen to black
+;		   (sdl:set-render-draw-color renderer 0 0 0 255)))
 
 
 (declaim (inline update))
@@ -24,7 +23,7 @@
 (declaim (inline handle-events))
 (defun handle-events
     (game)
-  (declare (type game game))
+  (declare (type game game-instance))
   (with-slots (game-renderer) game)
   )
 
@@ -49,4 +48,5 @@
 
 
 
-
+;(let ((pack (find-package :game)))
+;  (do-all-symbols (sym pack) (when (eql (symbol-package sym) pack) (export sym))))

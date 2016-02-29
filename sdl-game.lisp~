@@ -4,10 +4,22 @@
 
 ;;; "sdl-game" goes here. Hacks and glory await!
 
-(defparameter window
-  (sdl:create-window "pixel-pyratez"
-		     640
-		     480))
+(defconstant game (make-instance 'game :title "" :screen-width 100 :screen-height 200)
+  )
 
-(defparameter renderer (sdl:create-renderer window -1 0))
+
+
+
+
+;(defun main
+;    ()
+;  (init "pixel pirates" 640 480)
+;  (loop
+;     while (eq t *running?*)
+;     do (progn
+;	  (handle-events)
+;	  (update)
+;	  (render)))
+; (clean))
+
 
