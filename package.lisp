@@ -28,6 +28,8 @@
 		set!)
   (:export :render))
 
+(defpackage :travis-test
+  (:use #:cl :sdl))
 ;main package contains the # all others should not have it
 (defpackage #:sdl-game
   (:use #:cl))

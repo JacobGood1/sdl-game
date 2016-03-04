@@ -10,5 +10,5 @@
   :components ((:file "package")
 	       (:file "sdl")
 	       (:file "game")
+	       (:file "travis-test")
                (:file "sdl-game")))
-
