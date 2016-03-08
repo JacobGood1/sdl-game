@@ -2,6 +2,9 @@
 
 (defpackage :sdl
   (:use #:cl)
+  (:import-from :utilities 
+		partition
+		attach)
   (:export :create-window
 	   :get-window-surface
            :fill-rect
@@ -29,7 +32,13 @@
   (:export :render))
 
 (defpackage :travis-test
-  (:use #:cl :sdl))
+  (:use #:cl :sdl)
+  (:import-from :utilities
+    make
+    def-method
+    def-class
+    def-generic
+    set!))
 ;main package contains the # all others should not have it
 (defpackage #:sdl-game
   (:use #:cl))
