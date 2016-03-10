@@ -55,6 +55,8 @@
 (cffi:defcfun "get_window_surface" :pointer (sdl-window :pointer))
 ;surface.h
 (cffi:defcfun "fill_rect" :int (sdl-surface :pointer))
+;time.h
+(cffi:defcfun "get_ticks" :int)
 
 
 ;hide and show the window so to circumvent the bug

@@ -12,12 +12,12 @@
 
 (cffi:define-foreign-library SDL
   (:windows (:or "c:\\users\\jacobgood1\\documents\\visual studio 2015\\Projects\\SDL_Common_Lisp\\x64\\Release\\SDL_Common_Lisp"
-                 "TRAVIS YOUR DLL LOCATION GOES HERE!!11")))
+                 "c:\\users\\travis\\documents\\visual studio 2015\\Projects\\SDL_Common_Lisp\\x64\\Release\\SDL_Common_Lisp.dll")))
 (cffi:use-foreign-library SDL)
 
 (cffi:define-foreign-library SDL-RELOAD 
   (:windows (:or "c:\\users\\jacobgood1\\documents\\visual studio 2015\\Projects\\SDL_Common_Lisp_Reloadable\\x64\\Release\\SDL_Common_Lisp_Reloadable.dll"
-		 "TRAVIS PUT DLL HERERERER")))
+		 "C:\\home\\quicklisp\\local-projects\\SDL_Common_Lisp_Reloadable\\x64\\Release\\SDL_Common_Lisp_Reloadable.dll")))
 (cffi:use-foreign-library SDL-RELOAD)
 
 (defun reload-sdl 
@@ -36,19 +36,26 @@
 
 ; a bug exists where the window is not viewable until calling hide-window show-window 
 ; so this create window will exist inside of another inlined wrapper
-(cffi:defcfun "create_window_internal" :pointer (title :string) (screen-width :int) (screen-height :int))
-(cffi:defcfun "get_window_surface" :pointer (sdl-window :pointer))
-(cffi:defcfun "fill_rect" :int (sdl-surface :pointer))
-(cffi:defcfun "update_window_surface" :int (sdl-window :pointer))
-(cffi:defcfun "hide_window" :void (sdl-window :pointer))
-(cffi:defcfun "show_window" :void (sdl-window :pointer))
+
+;event.h
 (cffi:defcfun "poll_event" :int)
 (cffi:defcfun "get_event_type" :int)
 ;render.h
 (cffi:defcfun "create_renderer" :pointer (window :pointer) (index :int) (flags :int))
 (cffi:defcfun "set_render_draw_color" :void (renderer :pointer) (red :int) (green :int) (blue :int) (alpha :int))
-(cffi:defcfun "render_clear" :void (renderer :pointer ))
-(cffi:defcfun "render_present" :void (renderer :pointer ))
+(cffi:defcfun "render_clear" :void (renderer :pointer))
+(cffi:defcfun "render_present" :void (renderer :pointer))
+(cffi:defcfun "destroy_renderer" :void (renderer :pointer))
+;window.h
+(cffi:defcfun "create_window_internal" :pointer (title :string) (screen-width :int) (screen-height :int))
+(cffi:defcfun "destroy_window" :void (window :pointer))
+(cffi:defcfun "hide_window" :void (sdl-window :pointer))
+(cffi:defcfun "show_window" :void (sdl-window :pointer))
+(cffi:defcfun "update_window_surface" :int (sdl-window :pointer))
+(cffi:defcfun "get_window_surface" :pointer (sdl-window :pointer))
+;surface.h
+(cffi:defcfun "fill_rect" :int (sdl-surface :pointer))
+
 
 ;hide and show the window so to circumvent the bug
 (declaim (inline create-window))

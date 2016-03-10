@@ -19,20 +19,14 @@
 	   :destroy-window))
 
 (defpackage :game
-  (:use #:cl :sdl)
-  (:import-from :utilities
-		make
-		def-method
-		def-class
-		def-generic
-		set!)
+  (:use #:cl :sdl :utilities)
   (:export :render))
 
 (defpackage :travis-test
   (:use #:cl :sdl))
 ;main package contains the # all others should not have it
 (defpackage #:sdl-game
-  (:use #:cl))
+  (:use #:cl :utilities))
 
 
 
