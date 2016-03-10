@@ -47,5 +47,4 @@ Temporary Items
 .apdisk
 *.lisp#
 *.lisp~
-*.lisp~
 package.lisp~
