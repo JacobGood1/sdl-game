@@ -9,6 +9,7 @@
   :serial t
   :components ((:file "package")
 	       (:file "sdl")
+	       (:file "game-utilities")
 	       (:file "game")
 	       (:file "travis-test")
                (:file "sdl-game")))

@@ -10,8 +10,6 @@
 (defun pause-till-compile
     ()
   (error 'continue-compiling))
-(defun kek ())
-
 
 (cffi:define-foreign-library SDL
   (:windows (:or "c:\\users\\jacobgood1\\documents\\visual studio 2015\\Projects\\SDL_Common_Lisp\\x64\\Release\\SDL_Common_Lisp"
@@ -68,10 +66,9 @@
 (cffi:defcfun "get_window_surface" :pointer (sdl-window :pointer))
 ;surface.h
 (cffi:defcfun "fill_rect" :int (sdl-surface :pointer))
-<<<<<<< HEAD
+
 ;time.h
 (cffi:defcfun "get_ticks" :int)
-=======
 (cffi:defcfun "blit_surface" :void (source :pointer) (destination :pointer))
 (cffi:defcfun "free_surface" :void (surface :pointer))
 ;media.h
@@ -84,12 +81,10 @@
   (if [(init-sdl) >= 0]
       (Print "sdl init success")
       (error "sdl init failed"))
-    (if [(init-glew) >= 0]
-        (print "glew init success") 
-        (error "glew init failed"))
->>>>>>> origin/master
-
-    (print "init finished"))
+  (if [(init-glew) >= 0]
+      (print "glew init success") 
+      (error "glew init failed"))
+  (print "init finished"))
 
 (declaim (inline create-window))
 (defun create-window
@@ -102,22 +97,12 @@
     (show-window window)
     window))
 
-(defun setup-events-for-cond
-    (events)
-  (declare (type list events))
-  `(let ((event (get-event-type))) 
-     ,(cons 'cond 
-	    (loop for (event-type code) in (partition events 2) 
-	       collect `((= event (cffi:foreign-enum-value 'sdl-event-type ,event-type)) ,code)))
-     :value 
-     '(t nil)))
 
-(defmacro handle-events
-   (&rest events)
-  " feed the events to this macro and it will 
-  dispatch based on what is currently in the event que
-  EXAMPLE-INPUT:
-  :event-name-like-this (do-something)
-   available code names: event"
-       (setup-events-for-cond events))
+
+
+
+(utilities:export-all-symbols-except nil)
+
+
+
 
