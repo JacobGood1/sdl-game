@@ -11,11 +11,19 @@
     ()
   (error 'continue-compiling))
 
+
 (cffi:define-foreign-library SDL
+  (:windows (:or "C:\\Libs\\sdl\\lib\\x64\\SDL2.dll"
+                 "c:\\home\\SDL_Common_Lisp")))
+(cffi:use-foreign-library SDL)
+
+;TODO possible remove the wrapper code dll completely, I(Jacob) will start calling into the dll directly ^
+
+(cffi:define-foreign-library SDL-WRAPPER
   (:windows (:or "c:\\users\\jacobgood1\\documents\\visual studio 2015\\Projects\\SDL_Common_Lisp\\x64\\Release\\SDL_Common_Lisp"
                  "c:\\home\\SDL_Common_Lisp")))
 ;"c:\\users\\travis\\documents\\visual studio 2015\\Projects\\SDL_Common_Lisp\\x64\\Release\\SDL_Common_Lisp.dll"
-(cffi:use-foreign-library SDL)
+(cffi:use-foreign-library SDL-WRAPPER)
 
 (cffi:define-foreign-library SDL-RELOAD 
   (:windows (:or "c:\\users\\jacobgood1\\documents\\visual studio 2015\\Projects\\SDL_Common_Lisp_Reloadable\\x64\\Release\\SDL_Common_Lisp_Reloadable.dll"
@@ -52,14 +60,14 @@
 (cffi:defcfun "get_event_type" :int)
 (cffi:defcfun "get_event_key" :int)
 ;render.h
-(cffi:defcfun "create_renderer" :pointer (window :pointer) (index :int) (flags :int))
+(cffi:defcfun "create_renderer" :pointer (sdl-window :pointer) (index :int) (flags :int))
 (cffi:defcfun "set_render_draw_color" :void (renderer :pointer) (red :int) (green :int) (blue :int) (alpha :int))
 (cffi:defcfun "render_clear" :void (renderer :pointer))
 (cffi:defcfun "render_present" :void (renderer :pointer))
 (cffi:defcfun "destroy_renderer" :void (renderer :pointer))
 ;window.h
 (cffi:defcfun "create_window_internal" :pointer (title :string) (screen-width :int) (screen-height :int))
-(cffi:defcfun "destroy_window" :void (window :pointer))
+(cffi:defcfun "destroy_window" :void (sdl-window :pointer))
 (cffi:defcfun "hide_window" :void (sdl-window :pointer))
 (cffi:defcfun "show_window" :void (sdl-window :pointer))
 (cffi:defcfun "update_window_surface" :int (sdl-window :pointer))
@@ -76,32 +84,47 @@
 ;misc.h
 (cffi:defcfun "delay" :void (delay :int))
 
+;sdl.h
+(cffi:defcfun "SDL_GetWindowTitle" :string (sdl-window :pointer))
+(cffi:defcfun "SDL_SetWindowTitle" :void (sdl-window :pointer) (title :string))
+(cffi:defcfun "SDL_SetWindowSize" :void (sdl-window :pointer) (width :int) (height :int))
+
+
+(def-class sdl-window
+    :slots (address nil title nil size '(0 0)))
+
+(override-setter sdl-window title (progn (setf title value)
+				     (SDL-SetWindowTitle address value)))
+(override-setter sdl-window size (progn (setf size value)
+					(SDL-SetWindowSize address (first value) (second value))))
+;TODO throw an error when a macro is overriding a function in slots or vice versa
+
 (defun init
     ()
   (if [(init-sdl) >= 0]
-      (Print "sdl init success")
+      (print "sdl init success")
       (error "sdl init failed"))
   (if [(init-glew) >= 0]
       (print "glew init success") 
       (error "glew init failed"))
   (print "init finished"))
 
-(declaim (inline create-window))
+
 (defun create-window
-  (title screen-width screen-height)
-  
-  (let ((window (create-window-internal title screen-width screen-height)))
-    
+  (title size)
+  (let ((window-pointer (create-window-internal title (first size) (second size))))
     ;hide and show the window so to circumvent the bug
-    (hide-window window)
-    (show-window window)
-    window))
+    (hide-window window-pointer)
+    (show-window window-pointer)
+    (sdl-window :address window-pointer :title title :size size)))
 
 
 
 
 
-(utilities:export-all-symbols-except nil)
+
+
+(utilities:export-all-symbols-except '(window))
 
 
 

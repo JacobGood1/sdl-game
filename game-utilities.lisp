@@ -23,38 +23,41 @@
 (var *fps* 60
      *delay-time* [1000.0 / *fps*])
 
-(def-class game :slots (running? t window (sdl:create-window "lame-game" 640 480)))
+(def-class game :slots (running? t
+			window nil))
 (var *game* (game))
 
 
 
-(set-slots *game* running? nil)
-
-(defun-fast handle-events ((game game))
+(defun handle-events
+    ()
+  (sdl:poll-event)
   (handle-events-macro :quit (print "quiting")))
 
 (defun-fast update ((game game)))
 (defun-fast render ((game game)))
 
-(defun main
+(defun game-loop
     ()
   (sdl:init)
+  (set-slots *game* window (sdl:create-window "lame-game" '(640 480)))
   (let* ((frame-start 0)
 	 (frame-time 0)
-	 (game *game*)
-	 (window (sdl:create-window "lame-game" 640 480)))
+	 (game *game*))
     (loop
        while (running? game)
        do (progn
 	    (setf frame-start (sdl:get-ticks))
-	    (handle-events game)
+	    (handle-events)
 	    (update game)
 	    (render game)
 	    (setf frame-time [(sdl:get-ticks) - frame-start])
 	    (if (< frame-time *delay-time*)
 		(sdl:delay (round [*delay-time* - frame-time])))))))
 
-;(main)
+(defvar *game-loop-thread*)
+(setq *game-loop-thread* (bt:make-thread #'game-loop))
+
 (in-package #:timer)
 
 (def-class timer :slots (started? nil
