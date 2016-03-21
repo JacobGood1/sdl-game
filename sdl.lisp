@@ -94,13 +94,18 @@
   )
 (cffi:defcfun "fill_rect" :int (sdl-surface :pointer))
 (cffi:defcfun "SDL_ConvertSurface" :pointer (raw-surface :pointer) (surface-format :pointer) (flag :int))
+(cffi:defcfun "SDL_UpperBlitScaled" :int (src :pointer)(src-rect :pointer)(dest :pointer)(dest-rect :pointer))
 ;(cffi:defcfun "get_format" :pointer (sdl-surface :pointer))
 ;(defun get-pixel-format
 ;    (surface)
 ;  (get-format surface))
 
-;rect.h
-(cffi:defcstr "SDL_Rect" )
+;rect
+(cffi:defcstruct rect
+  (x :int)
+  (y :int)
+  (w :int)
+  (h :int))
 
 ;time.h
 (cffi:defcfun "SDL_GetTicks" :int)

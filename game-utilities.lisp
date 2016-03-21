@@ -117,14 +117,14 @@
 ;;;asset manager
 (in-package :game-utilities)
 (def-class asset-manager
-	 :slots (load% 0.0 
-		       path "C:/" 
-		       all-images #()
-		       all-audio #() 
-		       images (make-hash-table) 
-		       audio (make-hash-table)
-		       image-type ".bmp"
-		       audio-type ".ogg"
+    :slots ((load% 0.0) 
+	    (path "C:/") 
+	    (all-images '())
+	    (all-audio '()) 
+	    (images (make-hash-table)) 
+	    (audio (make-hash-table))
+	    (image-type ".bmp")
+	    (audio-type ".ogg")
 		       )
 	 :constructor (lambda () 
 			(let*
