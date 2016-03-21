@@ -91,7 +91,7 @@
 
 
 (def-class sdl-window
-    :slots (address nil title nil size '(0 0)))
+    :slots ((address nil) (title nil) (size '(0 0))))
 
 (override-setter sdl-window title (progn (setf title value)
 				     (SDL-SetWindowTitle address value)))
