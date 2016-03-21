@@ -111,3 +111,35 @@
 	    (setf time timer-paused-ticks)
 	    (setf time [(sdl:get-ticks) - timer-start-ticks])))
     time))
+
+
+
+;;;asset manager
+(in-package :game-utilities)
+(def-class asset-manager
+	 :slots (load% 0.0 
+		       path "C:/" 
+		       all-images #()
+		       all-audio #() 
+		       images (make-hash-table) 
+		       audio (make-hash-table)
+		       image-type ".bmp"
+		       audio-type ".ogg"
+		       )
+	 :constructor (lambda () 
+			(let*
+			    ((load-loop (lambda (element type) (loop 
+								   for e in (map 'list #'identity element) 
+								   do (attach images (to-keyword e) 
+									      (load-bmp (concatenate 'string path e type)))
+								     (print (get-error))
+								   finally (return images) (return audio)))
+			       ))
+			  (if (not (nil? all-images))
+			      (funcall load-loop all-images image-type))
+			  (if (not (nil? all-audio))
+			      (funcall load-loop all-audio audio-type))
+			  )))
+
+
+(export-all-symbols-except nil)

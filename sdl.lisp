@@ -14,7 +14,7 @@
 
 (cffi:define-foreign-library SDL
   (:windows (:or "C:\\Libs\\sdl\\lib\\x64\\SDL2.dll"
-                 "c:\\home\\SDL_Common_Lisp")))
+                 "C:\\libs\\sdl\\lib\\x64\\SDL2.dll")))
 (cffi:use-foreign-library SDL)
 
 ;TODO possible remove the wrapper code dll completely, I(Jacob) will start calling into the dll directly ^
@@ -50,6 +50,8 @@
 ; a bug exists where the window is not viewable until calling hide-window show-window 
 ; so this create window will exist inside of another inlined wrapper
 
+(defmacro get-address (pointer struct field) `(cffi:foreign-slot-value ,pointer '(:struct ,struct) ',field))
+
 ;SDL_Common_List.cpp
 (cffi:defcfun "init_sdl" :int)
 (cffi:defcfun "init_glew" :int)
@@ -72,15 +74,51 @@
 (cffi:defcfun "show_window" :void (sdl-window :pointer))
 (cffi:defcfun "update_window_surface" :int (sdl-window :pointer))
 (cffi:defcfun "get_window_surface" :pointer (sdl-window :pointer))
+
+
 ;surface.h
+;;; surface struct may have bugs! not all types are correct!!!
+(cffi:defcstruct surface
+  (flags :int)
+  (format :pointer)
+  (width :int)
+  (height :int)
+  (pitch :int)
+  (pixels :pointer)
+  (userdata :pointer)
+  (locked :int)
+  (locked-data :pointer)
+  (clip-rect :pointer)
+  (map :pointer)
+  (refcount :int)
+  )
 (cffi:defcfun "fill_rect" :int (sdl-surface :pointer))
+(cffi:defcfun "SDL_ConvertSurface" :pointer (raw-surface :pointer) (surface-format :pointer) (flag :int))
+;(cffi:defcfun "get_format" :pointer (sdl-surface :pointer))
+;(defun get-pixel-format
+;    (surface)
+;  (get-format surface))
+
+;rect.h
+(cffi:defcstr "SDL_Rect" )
 
 ;time.h
-(cffi:defcfun "get_ticks" :int)
+(cffi:defcfun "SDL_GetTicks" :int)
+(declaim (inline get-ticks))
+(defun get-ticks
+    ()
+  (sdl-getticks))
+
 (cffi:defcfun "blit_surface" :void (source :pointer) (destination :pointer))
 (cffi:defcfun "free_surface" :void (surface :pointer))
 ;media.h
 (cffi:defcfun "load_bmp" :pointer (bmp-path :string))
+(defun load-bmpp
+    (bmp-path game-surface)
+  (let* ((raw-surface (load-bmp bmp-path))
+	 (converted-surface (sdl-convertsurface raw-surface (get-address game-surface surface format) 0)))
+    (free-surface raw-surface)
+    converted-surface))
 ;misc.h
 (cffi:defcfun "delay" :void (delay :int))
 
