@@ -23,8 +23,8 @@
 (var *fps* 60
      *delay-time* [1000.0 / *fps*])
 
-(def-class game :slots (running? t
-			window nil))
+(def-class game :slots ((running? t)
+			(window nil)))
 (var *game* (game))
 
 
@@ -60,10 +60,10 @@
 
 (in-package #:timer)
 
-(def-class timer :slots (started? nil
-			 paused? nil
-			 paused-ticks 0
-			 start-ticks 0))
+(def-class timer :slots ((started? nil)
+			 (paused? nil)
+			 (paused-ticks 0)
+			 (start-ticks 0)))
 
 (defun-fast start
     ((timer timer))
