@@ -17,6 +17,13 @@
                  "C:\\libs\\sdl\\lib\\x64\\SDL2.dll")))
 (cffi:use-foreign-library SDL)
 
+(cffi:define-foreign-library SDL-IMAGE
+  (:windows (:or "JACOB-PATH" 
+		 "C:\\libs\\sdl\\lib\\x64\\SDL2_image.dll")))
+(cffi:use-foreign-library SDL-IMAGE)
+
+
+
 ;TODO possible remove the wrapper code dll completely, I(Jacob) will start calling into the dll directly ^
 
 (cffi:define-foreign-library SDL-WRAPPER
@@ -52,29 +59,49 @@
 
 (defmacro get-address (pointer struct field) `(cffi:foreign-slot-value ,pointer '(:struct ,struct) ',field))
 
+;SDL_GL
+(cffi:defcfun "SDL_GL_GetCurrentContext" :pointer)
 ;SDL_Common_List.cpp
 (cffi:defcfun "init_sdl" :int)
 (cffi:defcfun "init_glew" :int)
 (cffi:defcfun "quit" :void)
 (cffi:defcfun "get_error" :string)
+(cffi:defcfun "SDL_GetError" :string)
 ;event.h
 (cffi:defcfun "poll_event" :int)
 (cffi:defcfun "get_event_type" :int)
 (cffi:defcfun "get_event_key" :int)
 ;render.h
-(cffi:defcfun "create_renderer" :pointer (sdl-window :pointer) (index :int) (flags :int))
+(cffi:defcfun "create_renderer" :pointer (window :pointer))
+(cffi:defcfun "SDL_CreateRenderer" :pointer (window :pointer) (index :int) (flags :uint32))
 (cffi:defcfun "set_render_draw_color" :void (renderer :pointer) (red :int) (green :int) (blue :int) (alpha :int))
+(cffi:defcfun "SDL_CreateTextureFromSurface" :pointer (renderer :pointer) (surface :pointer))
 (cffi:defcfun "render_clear" :void (renderer :pointer))
+(cffi:defcfun "SDL_RenderCopy" :void (renderer :pointer) (texture :pointer) (src-rect :pointer) (dest-rect :pointer))
 (cffi:defcfun "render_present" :void (renderer :pointer))
 (cffi:defcfun "destroy_renderer" :void (renderer :pointer))
+(cffi:defcfun "SDL_RenderSetViewport" :int (renderer :pointer) (rect :pointer))
 ;window.h
 (cffi:defcfun "create_window_internal" :pointer (title :string) (screen-width :int) (screen-height :int))
+(cffi:defcfun "SDL_CreateWindow" :pointer (title :string) (x :int) (y :int) (w :int) (h :int) (flag :uint32))
 (cffi:defcfun "destroy_window" :void (sdl-window :pointer))
 (cffi:defcfun "hide_window" :void (sdl-window :pointer))
 (cffi:defcfun "show_window" :void (sdl-window :pointer))
 (cffi:defcfun "update_window_surface" :int (sdl-window :pointer))
 (cffi:defcfun "get_window_surface" :pointer (sdl-window :pointer))
-
+;image
+(cffi:defcfun "IMG_Init" :int (flag :int))
+(cffi:defcfun "IMG_GetError" :string)
+(cffi:defcfun "IMG_Load" :pointer (path :string))
+(cffi:defcfun "IMG_Quit" :void)
+;display
+(cffi:defcstruct display-mode
+  (format :uint32)
+  (w :int)
+  (h :int)
+  (refresh-rate :int)
+  (driver-data :pointer))
+(cffi:defcfun "SDL_GetDesktopDisplayMode" :int)
 
 ;surface.h
 ;;; surface struct may have bugs! not all types are correct!!!
@@ -118,10 +145,13 @@
 (cffi:defcfun "free_surface" :void (surface :pointer))
 ;media.h
 (cffi:defcfun "load_bmp" :pointer (bmp-path :string))
-(defun load-bmpp
-    (bmp-path game-surface)
-  (let* ((raw-surface (load-bmp bmp-path))
-	 (converted-surface (sdl-convertsurface raw-surface (get-address game-surface surface format) 0)))
+(defun load-img
+    (img-path renderer);game-surface
+  (let* ((raw-surface (img-load img-path))
+	 ;(converted-surface (sdl-convertsurface raw-surface (get-address game-surface surface format) 0))
+	 (converted-surface (sdl-createtexturefromsurface renderer raw-surface))
+	 )
+    
     (free-surface raw-surface)
     converted-surface))
 ;misc.h
@@ -132,9 +162,12 @@
 (cffi:defcfun "SDL_SetWindowTitle" :void (sdl-window :pointer) (title :string))
 (cffi:defcfun "SDL_SetWindowSize" :void (sdl-window :pointer) (width :int) (height :int))
 
-
 (def-class sdl-window
-    :slots ((address nil) (title nil) (size '(0 0))))
+    :slots ((address nil) 
+	    (title nil) 
+	    (size '(0 0))
+	    (renderer nil)
+	    (texture nil)))
 
 (override-setter sdl-window title (progn (setf title value)
 				     (SDL-SetWindowTitle address value)))
@@ -154,12 +187,12 @@
 
 
 (defun create-window
-  (title size)
-  (let ((window-pointer (create-window-internal title (first size) (second size))))
+  (title w h)
+  (let ((window-pointer (sdl-createwindow title 100 100 w h 4)))
     ;hide and show the window so to circumvent the bug
     (hide-window window-pointer)
     (show-window window-pointer)
-    (sdl-window :address window-pointer :title title :size size)))
+    (sdl-window :address window-pointer :title title :size `(,w ,h))))
 
 
 

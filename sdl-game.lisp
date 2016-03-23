@@ -5,11 +5,6 @@
 ;;; "sdl-game" goes here. Hacks and glory await!
 
 
-
-
-
-
-
 ;(defun main
 ;    ()
 ;  (init "pixel pirates" 640 480)

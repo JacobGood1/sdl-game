@@ -27,37 +27,70 @@
 			(window nil)))
 (var *game* (game))
 
-
+(set-slots *game* running? t)
 
 (defun handle-events
     ()
   (sdl:poll-event)
-  (handle-events-macro :quit (print "quiting")))
+  (handle-events-macro :quit (print "asdasd")))
 
 (defun-fast update ((game game)))
-(defun-fast render ((game game)))
+;(defun-fast render ((game game)))
+(defun render (game texture)
+  (let*   ((renderer (renderer (window game)))
+	   ;testing viewport and clipping
+	   ;the dest-rect (viewport) will scale any image to FIT itself.
+	   ;the src-rect (clip) is a rect that specifies what part of the image to render.
+	   ;when using this with sprite sheets,
+	   ;   the viewport and clip must have the same dimensions to avoid
+	   ;   any image warping. the viewport will then dictate where to
+	   ;   draw the image onto the screen.
+	   (viewport (utilities:new-struct rect ((x 0) (y 0) (w 128) (h 128))))
+	   (clip (utilities:new-struct rect ((x 160) (y 16) (w 16) (h 16)))))
+    (render-clear renderer)
+					;testing viewports
+    ;(sdl:sdl-rendersetviewport renderer viewport)
+					;global sample texture for testing
+    (sdl-rendercopy renderer texture clip viewport)
+    (render-present renderer)
+    ))
+
+(defun start
+    ()
+  (sdl:init)
+  (set-slots *game* window (sdl:create-window "lame-game" 640 480))
+  ;create renderer : hardware-accelerated = 2, vsyn = 4
+  (set-slots (window *game*) 
+	     renderer 
+	     (sdl:sdl-createrenderer (address (window *game*)) 1 (logior 2 4)))
+  ;set renderer draw color
+  (set-render-draw-color (renderer (window *game*)) 0 0 0 255)
+  ;init image : TODO : this should include multiple flags for all types of images.
+  (img-init 4);I think 4 represents png
+  (var texture (sdl:load-img "C:/sprite_sheet.png" (renderer (window *game*))))
+)
 
 (defun game-loop
     ()
-  (sdl:init)
-  (set-slots *game* window (sdl:create-window "lame-game" '(640 480)))
+  (start)
   (let* ((frame-start 0)
 	 (frame-time 0)
-	 (game *game*))
+	 (game *game*)
+	 )
     (loop
        while (running? game)
        do (progn
 	    (setf frame-start (sdl:get-ticks))
 	    (handle-events)
 	    (update game)
-	    (render game)
+	    (render game texture)
 	    (setf frame-time [(sdl:get-ticks) - frame-start])
 	    (if (< frame-time *delay-time*)
 		(sdl:delay (round [*delay-time* - frame-time])))))))
 
 (defvar *game-loop-thread*)
 (setq *game-loop-thread* (bt:make-thread #'game-loop))
-
+;(game-loop)
 (in-package #:timer)
 
 (def-class timer :slots ((started? nil)
@@ -123,7 +156,7 @@
 	    (all-audio '()) 
 	    (images (make-hash-table)) 
 	    (audio (make-hash-table))
-	    (image-type ".bmp")
+	    (image-type ".png")
 	    (audio-type ".ogg")
 		       )
 	 :constructor (lambda () 
@@ -131,8 +164,7 @@
 			    ((load-loop (lambda (element type) (loop 
 								   for e in (map 'list #'identity element) 
 								   do (attach images (to-keyword e) 
-									      (load-bmp (concatenate 'string path e type)))
-								     (print (get-error))
+									      (load-img (concatenate 'string path e type)))
 								   finally (return images) (return audio)))
 			       ))
 			  (if (not (nil? all-images))
