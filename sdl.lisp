@@ -167,7 +167,9 @@
 	    (title nil) 
 	    (size '(0 0))
 	    (renderer nil)
-	    (texture nil)))
+	    )
+    :constructor (lambda (address title size)
+		   (set-slots sdl-window :address address :title title :size size)))
 
 (override-setter sdl-window title (progn (setf title value)
 				     (SDL-SetWindowTitle address value)))
@@ -184,7 +186,6 @@
       (print "glew init success") 
       (error "glew init failed"))
   (print "init finished"))
-
 
 (defun create-window
   (title w h)
