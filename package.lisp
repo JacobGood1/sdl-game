@@ -20,8 +20,12 @@
   (:use #:cl :sdl :utilities)
   (:export :render))
 
+(defpackage :jacob-test
+  (:use #:cl :sdl :utilities))
+
 (defpackage :travis-test
   (:use #:cl :sdl :utilities))
+
 ;main package contains the # all others should not have it
 (defpackage #:sdl-game
   (:use #:cl :utilities))

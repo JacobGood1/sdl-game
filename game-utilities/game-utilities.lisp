@@ -20,12 +20,21 @@
    available code names: event"
   (setup-events-for-cond events))
 
+
 (var *fps* 60
      *delay-time* [1000.0 / *fps*])
 
+(def-class scene
+    :slots ((entities (make-array 1 :adjustable t :fill-pointer 0))
+	    (systems (make-array 1 :adjustable t :fill-pointer 0))))
+
 (def-class game :slots ((running? t)
-			(window nil)))
+			(window nil)
+			(scene (scene))
+			))
 (var *game* (game))
+
+
 
 (set-slots *game* :running? t)
 
@@ -102,7 +111,9 @@
 
 (defvar *game-loop-thread*)
 (setq *game-loop-thread* (bt:make-thread #'game-loop))
-;(game-loop)
+					;(game-loop)
+
+
 (in-package #:timer)
 
 (def-class timer :slots ((started? nil)

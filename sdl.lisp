@@ -18,7 +18,7 @@
 (cffi:use-foreign-library SDL)
 
 (cffi:define-foreign-library SDL-IMAGE
-  (:windows (:or "JACOB-PATH" 
+  (:windows (:or "C:\\libs\\sdl\\lib\\x64\\SDL2_image.dll" 
 		 "C:\\libs\\sdl\\lib\\x64\\SDL2_image.dll")))
 (cffi:use-foreign-library SDL-IMAGE)
 
