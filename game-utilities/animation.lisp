@@ -1,4 +1,4 @@
-(in-package #:game-utilities/animation)
+(in-package :game-utilities/animation)
 
 (def-class animation
     :slots ((fps nil)
@@ -15,11 +15,13 @@
 				      :sprite-count length
 				      :texture texture
 				      :fps fps)
-			   (loop for a
+			   (loop for sprite-coordinate
 			      in sprite-coordinates
-			      do (setf (aref new-array array-count) (eval `(new-struct rect ,a)))
-				(setf array-count [array-count + 1]))
-			   
+			      do (setf (aref new-array array-count)
+				       
+					(eval `(new-struct rect ,sprite-coordinate))
+				       )
+				(setf array-count [array-count + 1]))			   
 			   new-array))))
 
 (defn update-animation

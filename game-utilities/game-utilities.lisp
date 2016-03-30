@@ -1,4 +1,4 @@
-(in-package #:game-utilities/game-utilities)
+(in-package :game-utilities/game-utilities)
 
 (eval-when (:compile-toplevel :execute :load-toplevel)
    (defun setup-events-for-cond
@@ -23,86 +23,49 @@
 (var *fps* 60
      *delay-time* [1000.0 / *fps*])
 
-(def-class game :slots ((running? t)
-			(window nil)))
-(var *game* (game))
-
-(set-slots *game* :running? t)
-
-(var *texture* nil)
-(var ani-obj nil)
+;deprecated: this object has been merged into the scene object.
+;(def-class application :slots ((running? t)(window nil)))
 
 (defun handle-events
     ()
   (sdl:poll-event)
-  (handle-events-macro :quit (print "asdasd")))
+  (handle-events-macro :quit (print "quit")))
 
-(defun-fast update ((game game)))
+;deprecated: scene's now define their update/render fns
+;(defun update (scene))
+;(defun render (scene))
 ;(defun-fast render ((game game)))
-(defun render (game)
-  (let*   ((renderer (:renderer (:window game)))
-	   ;testing viewport and clipping
-	   ;the dest-rect (viewport) will scale any image to FIT itself.
-	   ;the src-rect (clip) is a rect that specifies what part of the image to render.
-	   ;when using this with sprite sheets,
-	   ;   the viewport and clip must have the same dimensions to avoid
-	   ;   any image warping. the viewport will then dictate where to
-	   ;   draw the image onto the screen.
-	   (viewport (utilities:new-struct rect ((x 0) (y 0) (w 128) (h 128))))
-	   (clip (utilities:new-struct rect ((x 160) (y 16) (w 16) (h 16)))))
-	   
-    (render-clear renderer)
-					;testing viewports
-					;(sdl:sdl-rendersetviewport renderer viewport)
-					;global sample texture for testing
-    (sdl-rendercopy renderer 
-		    *texture* 
-		    (game-utilities/animation:update-animation ani-obj) 
-		    viewport)
-    (render-present renderer)
-    ))
-
-(defun start
-    ()
-  (sdl:init)
-  (set-slots *game* :window (sdl:create-window "lame-game" 640 480))
-  ;create renderer : hardware-accelerated = 2, vsyn = 4
-  (set-slots (:window *game*) 
-	     :renderer (sdl:sdl-createrenderer (:address (:window *game*)) 1 (logior 2 4)))
-  ;set renderer draw color
-  (set-render-draw-color (:renderer (:window *game*)) 0 0 0 255)
-  ;init image : TODO : this should include multiple flags for all types of images.
-  (img-init 4);I think 4 represents png
-  (setf *texture* (sdl:load-img "C:/sprite_sheet.png" 
-			      (:renderer (:window *game*))))
-  (setf ani-obj (game-utilities/animation:animation :fps 4
-						    :sprite-coordinates '(((x 160) (y 0) (w 16) (h 16))
-									  ((x 176) (y 0) (w 16) (h 16))
-									  ((x 192) (y 0) (w 16) (h 16))
-									  ((x 208) (y 0) (w 16) (h 16)))
-						    :texture *texture*)))
 
 (defun game-loop
-    ()
-  (start)
+    (scene)
   (let* ((frame-start 0)
 	 (frame-time 0)
-	 (game *game*)
+	 ;(game *game*)
 	 )
+    
     (loop
-       while (:running? game)
+       while (:running? scene)
        do (progn
 	    (setf frame-start (sdl:get-ticks))
 	    (handle-events)
-	    (update game)
-	    (render game)
+	    (funcall (:update scene) scene)
+	    (funcall (:render scene) scene)
 	    (setf frame-time [(sdl:get-ticks) - frame-start])
 	    (if (< frame-time *delay-time*)
-		(sdl:delay (round [*delay-time* - frame-time])))))))
+		(sdl:delay (round [*delay-time* - frame-time])))
+	    ))))
 
-(defvar *game-loop-thread*)
-(setq *game-loop-thread* (bt:make-thread #'game-loop))
+;(defun start (scene) (defvar *game-loop-thread*) (setq *game-loop-thread* (bt:make-thread (lambda () (game-loop scene)))))
+			    ;#'game-loop
+(defun start (scene) (game-loop scene))			    
+			    
+
+
 ;(game-loop)
+
+;;export all symbols before going into the :timer package
+(export-all-symbols-except nil)
+
 (in-package #:timer)
 
 (def-class timer :slots ((started? nil)
