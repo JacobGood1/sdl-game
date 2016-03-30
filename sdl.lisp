@@ -1,7 +1,7 @@
 ;;;;TODO Installer must handle glew libs when released on steam.
 ;;;;Install glew.dll on windows system32
 
-(in-package #:sdl)
+(in-package :sdl)
 
 (define-condition continue-compiling
     (error)

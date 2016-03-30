@@ -14,6 +14,5 @@
 	       (:file "game-utilities/asset-manager")
 	       
 	       (:file "game")
-	       (:file "travis-test")
 	       (:file "jacob-test")
                (:file "sdl-game")))
