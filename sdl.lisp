@@ -137,6 +137,18 @@
   (w :int)
   (h :int))
 
+(defmacro new-struct
+    (type slots-and-values)
+  (let ((ptr (gensym)))
+    `(let* ((,ptr (cffi:foreign-alloc '(:struct ,type))))
+       ,(loop for (slot value) in slots-and-values
+	   collect `(cffi:foreign-slot-value ,ptr '(:struct ,type) ',slot)
+	   into foreign-slot-values
+	   collect value
+	   into values
+	   finally (return (append '(setf) (interleave foreign-slot-values values))))
+       ,ptr)))
+
 ;time.h
 (cffi:defcfun "SDL_GetTicks" :int)
 (declaim (inline get-ticks))

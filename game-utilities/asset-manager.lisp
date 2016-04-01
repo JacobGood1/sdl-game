@@ -27,7 +27,7 @@
 		     (if (not (nil? (:all-audio asset-manager)))
 			 (funcall load-loop (:all-audio asset-manager) (:audio-type asset-manager)))
 		     (if (not (nil? animation-maps))
-			 (loop for animation-map in animation-maps do 
+			 (loop for animation-map in animation-maps do
 						      (let* ((name (gethash :name animation-map)))
 							(remhash :name animation-map)
 							(attach (:animations asset-manager) name animation-map)))))))
