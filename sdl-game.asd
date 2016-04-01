@@ -6,7 +6,7 @@
   :license "Specify license here"
   :serial t
   :depends-on (#:cffi
-	       #:utilities)
+	       :utilities)
   :components ((:file "package")
 	       (:file "sdl")
 	       (:file "game-utilities/animation")
