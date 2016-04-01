@@ -1,4 +1,4 @@
-(in-package #:game)
+(in-package :game)
 
 
 ;(def-class game

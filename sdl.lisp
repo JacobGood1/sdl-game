@@ -127,6 +127,9 @@
 ;    (surface)
 ;  (get-format surface))
 
+(cffi:defcfun "new_rect" :pointer (x :int) (y :int) (w :int) (h :int))
+(cffi:defcfun "delete_rect" :void (rect :pointer))
+
 ;rect
 (cffi:defcstruct rect
   (x :int)

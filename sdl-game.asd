@@ -4,9 +4,9 @@
   :description "Describe sdl-game here"
   :author "Your Name <your.name@example.com>"
   :license "Specify license here"
+  :serial t
   :depends-on (#:utilities
                #:cffi)
-  :serial t
   :components ((:file "package")
 	       (:file "sdl")
 	       (:file "game-utilities/animation")
