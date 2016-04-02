@@ -127,15 +127,22 @@
 ;    (surface)
 ;  (get-format surface))
 
+
+
+;rect.h
 (cffi:defcfun "new_rect" :pointer (x :int) (y :int) (w :int) (h :int))
 (cffi:defcfun "delete_rect" :void (rect :pointer))
+;get slots
+(cffi:defcfun "rect_get_x" :int (rect :pointer))
+(cffi:defcfun "rect_get_y" :int (rect :pointer))
+(cffi:defcfun "rect_get_w" :int (rect :pointer))
+(cffi:defcfun "rect_get_h" :int (rect :pointer))
+;set slots
+(cffi:defcfun "rect_set_x" :pointer (rect :pointer) (value :int))
+(cffi:defcfun "rect_set_y" :pointer (rect :pointer) (value :int))
+(cffi:defcfun "rect_set_w" :pointer (rect :pointer) (value :int))
+(cffi:defcfun "rect_set_h" :pointer (rect :pointer) (value :int))
 
-;rect
-(cffi:defcstruct rect
-  (x :int)
-  (y :int)
-  (w :int)
-  (h :int))
 
 (defmacro new-struct
     (type slots-and-values)

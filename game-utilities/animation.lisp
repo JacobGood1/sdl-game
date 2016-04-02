@@ -15,12 +15,10 @@
 				      :sprite-count length
 				      :texture texture
 				      :fps fps)
-			   (loop for sprite-coordinate
-			      in sprite-coordinates
-			      do (setf (aref new-array array-count)
-				       
-					(eval `(new-struct rect ,sprite-coordinate))
-				       )
+			   (loop
+			      for (x y w h) in sprite-coordinates
+			      do (setf (aref new-array array-count)	       
+				       (new-rect x y w h))
 				(setf array-count [array-count + 1]))			   
 			   new-array))))
 
