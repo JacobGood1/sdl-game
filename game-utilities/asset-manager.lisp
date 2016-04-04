@@ -14,7 +14,7 @@
 	    (audio-type ".ogg")
 	    (renderer nil)
 	    (animations (make-map)))
-    :constructor (lambda (all-images all-audio animation-maps renderer)
+    :constructor (lambda (all-images all-audio animations renderer)
 		   (set-slots asset-manager :all-images all-images :all-audio all-audio :renderer renderer)
 		   (let* ((load-loop (lambda (element type)
 				       (loop 
@@ -26,14 +26,20 @@
 			 (funcall load-loop (:all-images asset-manager) (:image-type asset-manager)))
 		     (if (not (nil? (:all-audio asset-manager)))
 			 (funcall load-loop (:all-audio asset-manager) (:audio-type asset-manager)))
-		     (if (not (nil? animation-maps))
-			 (loop for animation-map in animation-maps do
-						      (let* ((name (gethash :name animation-map)))
-							(remhash :name animation-map)
-							(attach (:animations asset-manager) name animation-map)))))))
+		     (if (not (nil? animations))
+			 ;(loop for animation-map in animation-maps do
+			 ;     (let* ((name (gethash :name animation-map)))
+		         ;	(remhash :name animation-map)
+			 ;	(attach (:animations asset-manager) name animation-map)))
+			 ;(attach (:animations asset-manager) animations)
+			 (set-slots asset-manager :animations animations)
+			 ))))
 
 
-;;;;deprecated
-(defun attach-animation
-    (asset-manager name animation)
-  (attach (:animations asset-manager) name animation))
+(def-class animation
+    :slots ((fps nil) (sprite-coordinates nil) (texture nil))
+    :constructor (lambda (name fps sprite-coordinates texture)
+		   (set-slots animation
+			      :fps fps
+			      :sprite-coordinates sprite-coordinates
+			      :texture texture)))

@@ -7,9 +7,6 @@
 (defpackage :game-utilities/game-utilities
   (:use #:cl :sdl :utilities))
 
-(defpackage :game-utilities/animation
-  (:use #:cl :sdl :utilities))
-
 (defpackage :game-utilities/asset-manager
   (:use #:cl :sdl :utilities))
 
