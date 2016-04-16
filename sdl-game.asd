@@ -9,10 +9,11 @@
                #:cffi)
   :components ((:file "package")
 	       (:file "sdl")
-	       ;(:file "game-utilities/animation")
+
 	       (:file "game-utilities/game-utilities")
+	       (:file "game-utilities/event-manager")
 	       (:file "game-utilities/asset-manager")
 	       
 	       (:file "game")
-	       (:file "jacob-test")
+	       ;(:file "jacob-test")
                (:file "sdl-game")))

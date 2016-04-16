@@ -10,6 +10,9 @@
 (defpackage :game-utilities/asset-manager
   (:use #:cl :sdl :utilities))
 
+(defpackage :game-utilities/event-manager
+  (:use #:cl :sdl :utilities))
+
 (defpackage :timer
   (:use #:cl :sdl :utilities))
 

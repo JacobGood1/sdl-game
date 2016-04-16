@@ -1,53 +1,44 @@
-(in-package #:game-utilities/game-utilities)
+(in-package :game-utilities/game-utilities)
 
-(eval-when (:compile-toplevel :execute :load-toplevel)
-   (defun setup-events-for-cond
-       (events)
-     (declare (type list events))
-     `(let ((event (get-event-type))) 
-	,(cons 'cond 
-	       (loop for (event-type code) in (partition events 2) 
-		  collect `((= event (cffi:foreign-enum-value 'sdl-event-type ,event-type)) ,code)))
-	:value 
-	'(t nil))))
-
-(defmacro handle-events-macro
-    (&rest events)
-  " feed the events to this macro and it will 
-  dispatch based on what is currently in the event que
-  EXAMPLE-INPUT:
-  :event-name-like-this (do-something)
-   available code names: event"
-  (setup-events-for-cond events))
+;;(defmacro handle-events-macro
+;;    (&rest events)
+;;  " feed the events to this macro and it will 
+;;  dispatch based on what is currently in the event que
+;;  EXAMPLE-INPUT:
+;;  :event-name-like-this (do-something)
+;;   available code names: event"
+;;  (setup-events-for-cond events))
 
 (var *fps* 60
      *delay-time* [1000.0 / *fps*])
 
-;deprecated: this object has been merged into the scene object.
-;(def-class application :slots ((running? t)(window nil)))
+;;deprecated: this object has been merged into the scene object.
+;;(def-class application :slots ((running? t)(window nil)))
 
-(defun handle-events
-    ()
-  (sdl:poll-event)
-  (handle-events-macro :quit (print "quit")))
+;;(defun handle-events
+;;    ()
+;;  (sdl:poll-event)
+;;  (handle-events-macro :quit (print "quit")))
 
-;deprecated: scene's now define their update/render fns
-;(defun update (scene))
-;(defun render (scene))
-;(defun-fast render ((game game)))
+;;deprecated: scene's now define their update/render fns
+;;(defun update (scene))
+;;(defun render (scene))
+;;(defun-fast render ((game game)))
 
 (defun game-loop
     (scene)
   (let* ((frame-start 0)
 	 (frame-time 0)
-	 ;(game *game*)
+	 ;;(game *game*)
 	 )
 
     (loop
        while (:running? scene)
        do (progn
 	    (setf frame-start (sdl:get-ticks))
-	    (handle-events)
+	    (game-utilities/event-manager::update (:event-manager scene) scene)
+	    (print (game-utilities/event-manager::mouse-coordinate (:event-manager scene)))
+	    (print (game-utilities/event-manager::mouse-relative-coordinate (:event-manager scene)))
 	    (funcall (:update scene) scene)
 	    (funcall (:render scene) scene)
 	    (setf frame-time [(sdl:get-ticks) - frame-start])
@@ -55,13 +46,13 @@
 		(sdl:delay (round [*delay-time* - frame-time])))
 	    ))))
 
-;(defun start (scene) (defvar *game-loop-thread*) (setq *game-loop-thread* (bt:make-thread (lambda () (game-loop scene)))))
-			    ;#'game-loop
+;;(defun start (scene) (defvar *game-loop-thread*) (setq *game-loop-thread* (bt:make-thread (lambda () (game-loop scene)))))
+			    ;;#'game-loop
 (defun start (scene) (game-loop scene))
 
 
 
-;(game-loop)
+;;(game-loop)
 
 ;;export all symbols before going into the :timer package
 (export-all-symbols-except nil)
@@ -73,46 +64,46 @@
 			 (paused-ticks 0)
 			 (start-ticks 0)))
 
-(defun-fast start
-    ((timer timer))
-  (set-slots timer
-	     started? t
-	     paused? nil
-	     start-ticks (sdl:get-ticks)
-	     paused-ticks 0)
+(defun start
+    (timer)
+  (setf
+   (started? timer) t
+   (paused? timer) nil
+   (start-ticks timer) (sdl:get-ticks)
+   (paused-ticks timer) 0)
   timer)
 
-(defun-fast stop
-    ((timer timer))
-  (set-slots timer
-	     started? nil
-	     paused? nil
-	     start-ticks 0
-	     paused-ticks 0)
+(defun stop
+    (timer)
+  (setf
+   (started? timer) nil
+   (paused? timer) nil
+   (start-ticks timer) 0
+   (paused-ticks timer) 0)
   timer)
 
-(defun-fast pause
-    ((timer timer))
+(defun pause
+    (timer)
   (if (and timer-started?
 	   (not timer-paused?))
-      (set-slots timer
-	     paused? t
-	     paused-ticks [(sdl:get-ticks) - (start-ticks timer)]
-	     start-ticks 0))
+      (setf
+       (paused? timer) t
+       (paused-ticks timer) [(sdl:get-ticks) - (start-ticks timer)]
+       (start-ticks timer) 0))
   timer)
 
-(defun-fast unpause
-    ((timer timer))
+(defun unpause
+    (timer)
   (if (and timer-started? timer-paused?)
-      (set-slots timer
-		 paused? nil
-		 start-ticks [(sdl:get-ticks) - timer-paused-ticks]
-		 paused-ticks 0))
+      (setf 
+       (paused? timer) nil
+       (start-ticks timer) [(sdl:get-ticks) - timer-paused-ticks]
+       (paused-ticks timer) 0))
   timer)
 
 
-(defun-fast ticks
-    ((timer timer))
+(defun ticks
+    (timer)
   (let ((time 0))
     (if timer-started?
 	(if timer-paused?
@@ -125,4 +116,4 @@
 
 
 
-(export-all-symbols-except nil)
+;;(export-all-symbols-except nil)
