@@ -10,9 +10,9 @@
   :components ((:file "package")
 	       (:file "sdl")
 
-	       (:file "game-utilities/game-utilities")
 	       (:file "game-utilities/event-manager")
 	       (:file "game-utilities/asset-manager")
+	       (:file "game-utilities/game-utilities")
 	       
 	       (:file "game")
 	       ;(:file "jacob-test")

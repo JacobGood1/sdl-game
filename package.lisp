@@ -4,14 +4,27 @@
   (:use #:cl :utilities)
   (:export :init))
 
-(defpackage :game-utilities/game-utilities
-  (:use #:cl :sdl :utilities))
-
 (defpackage :game-utilities/asset-manager
   (:use #:cl :sdl :utilities))
 
 (defpackage :game-utilities/event-manager
-  (:use #:cl :sdl :utilities))
+  (:use #:cl :sdl :utilities)
+  (:export :event-manager
+	   
+	   :key-pressed?
+	   :key-down?
+	   :key-released?
+	   
+	   :mouse-coordinate
+	   :mouse-relative-coordinate
+	   :LMB?
+	   :MMB?
+	   :RMB?
+	   :MMB-scroll-up?
+	   :MMB-scroll-down?))
+
+(defpackage :game-utilities/game-utilities
+  (:use #:cl :sdl :utilities :game-utilities/event-manager))
 
 (defpackage :timer
   (:use #:cl :sdl :utilities))
