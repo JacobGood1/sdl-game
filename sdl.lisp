@@ -458,7 +458,8 @@
 				     rect)))))
 
 (defun draw-rects-INGAME
-    (scene camera-rect rects colors &key origin)   
+    ;;"NOTE: This fn creates a copy of every rect that's being passed."
+    (scene camera-rect rects colors &key origin type)   
   (loop for (rect color) in (partition (interleave rects colors) 2)
      do (progn
 	  (let* ((r-x (sdl::rect-get-x rect))
@@ -466,7 +467,8 @@
 		 (r-w (sdl::rect-get-w rect))
 		 (r-h (sdl::rect-get-h rect))
 		 (c-x (sdl::rect-get-x camera-rect))
-		 (c-y (sdl::rect-get-y camera-rect)))
+		 (c-y (sdl::rect-get-y camera-rect))
+		 (rect (sdl::new-rect r-x r-y r-w r-h)))
 	    (set-render-draw-color (:renderer scene)
 				   (nth 0 color)
 				   (nth 1 color)
@@ -484,7 +486,11 @@
 		(sdl::rect-set-position rect
 				    (- r-x c-x)
 				    (- r-y c-y)))
-	    (sdl::sdl-renderdrawrect (:renderer scene)
-				     rect)))))
+	    (if (eq type :fill)
+		(sdl::sdl-renderfillrect (:renderer scene)
+					   rect)
+		(sdl::sdl-renderdrawrect (:renderer scene)
+					 rect))
+	    (sdl::delete-rect rect)))))
 
 (utilities:export-all-symbols-except '(window))
