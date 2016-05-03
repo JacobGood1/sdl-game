@@ -11,6 +11,10 @@
     ()
   (error 'continue-compiling))
 
+;;common on release
+;;(setf *default-pathname-defaults* "C:\\emacs\\bin")
+
+
 (cffi:define-foreign-library STEAM
   (:windows (:or "C:\\emacs\\bin\\dlls\\steam\\steam_api64.dll"
 	     ;;"C:\\emacs\\bin\\dlls\\steam\\Steam_CommonLisp.dll"
@@ -476,16 +480,16 @@
 				   (nth 3 color))
 	    (if origin
 		(cond ((eq origin :center) (sdl::rect-set-position rect
-								   (- (- r-x (/ r-w 2)) c-x)
-								   (- (- r-y (/ r-h 2)) c-y)))
+								   (round (- (- r-x (/ r-w 2)) c-x))
+								   (round (- (- r-y (/ r-h 2)) c-y))))
 		      ;;user didn't supply vaid command;;return with only camera modifications
 		      (:default (sdl::rect-set-position rect
-							(- r-x c-x)
-							(- r-y c-y))))
+							(round (- r-x c-x))
+							(round (- r-y c-y)))))
 		;;user didn't supply an origin;;return without only camera modifications
 		(sdl::rect-set-position rect
-				    (- r-x c-x)
-				    (- r-y c-y)))
+					(round (- r-x c-x))
+					(round (- r-y c-y))))
 	    (if (eq type :fill)
 		(sdl::sdl-renderfillrect (:renderer scene)
 					   rect)
